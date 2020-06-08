@@ -161,21 +161,21 @@ open_port() {
   if [[ ${release} != "centos" ]]; then
     #iptables -I INPUT -p tcp --dport 80 -j ACCEPT
     #iptables -I INPUT -p tcp --dport 443 -j ACCEPT
-    iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
-    iptables -I INPUT -m state --state NEW -m udp -p udp --dport 80 -j ACCEPT
-    ip6tables -I INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
-    ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport 80 -j ACCEPT
-    iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
-    iptables -I INPUT -m state --state NEW -m udp -p udp --dport 443 -j ACCEPT
-    ip6tables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
-    ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport 443 -j ACCEPT
+    iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
+    iptables -I INPUT -m state --state NEW -m udp -p udp --dport 8080 -j ACCEPT
+    ip6tables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
+    ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport 8080 -j ACCEPT
+    iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8443 -j ACCEPT
+    iptables -I INPUT -m state --state NEW -m udp -p udp --dport 8443 -j ACCEPT
+    ip6tables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8443 -j ACCEPT
+    ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport 8443 -j ACCEPT
     iptables-save >/etc/iptables.rules.v4
 		ip6tables-save >/etc/iptables.rules.v6
     netfilter-persistent save
     netfilter-persistent reload
   else
-    firewall-cmd --zone=public --add-port=80/tcp --permanent
-    firewall-cmd --zone=public --add-port=443/tcp --permanent
+    firewall-cmd --zone=public --add-port=8080/tcp --permanent
+    firewall-cmd --zone=public --add-port=8443/tcp --permanent
 	fi
 }
 
@@ -451,9 +451,9 @@ trojan_go_conf(){
 {
   "run_type": "server",
   "local_addr": "0.0.0.0",
-  "local_port": 443,
+  "local_port": 8443,
   "remote_addr": "127.0.0.1",
-  "remote_port": 80,
+  "remote_port": 8080,
   "log_level": 1,
   "log_file": "",
   "password": [
@@ -772,7 +772,7 @@ echo -e "
 ${GREEN}=========================Trojan-go+tls 安装成功==============================
 ${FUCHSIA}=========================   Trojan-go 配置信息  =============================
 ${GREEN}地址：              ${domain}
-${GREEN}端口：              443
+${GREEN}端口：              8443
 ${GREEN}密码：              ${password}
 ${GREEN}websocket状态：     ${websocket_status}
 ${GREEN}websocket路径：     ${websocket_path}
@@ -787,7 +787,7 @@ nginx_trojan_conf() {
   touch ${nginx_conf_dir}/default.conf
   cat >${nginx_conf_dir}/default.conf <<EOF
   server {
-    listen 80;
+    listen 8080;
     server_name ${domain};
     root ${web_dir};
 }
@@ -833,7 +833,7 @@ caddy_trojan_conf() {
    [[ ! -d ${caddy_conf_dir} ]] && mkdir ${caddy_conf_dir}
   touch ${caddy_conf}
   cat >${caddy_conf} <<_EOF
-http://${domain}:80 {
+http://${domain}:8080 {
   gzip
   timeouts none
   tls /data/${domain}/fullchain.crt /data/${domain}/privkey.key {
@@ -898,8 +898,8 @@ trojan_nginx_install(){
   install_dependency
   #close_firewall
   download_install
-  port_used_check 80
-  port_used_check 443
+  port_used_check 8080
+  port_used_check 8443
   uninstall_web
   remove_trojan_mgr
   uninstall_caddy
@@ -936,8 +936,8 @@ trojan_caddy_install(){
   install_dependency
   #close_firewall
   download_install
-  port_used_check 80
-  port_used_check 443
+  port_used_check 8080
+  port_used_check 8443
   uninstall_web
   remove_trojan_mgr
   uninstall_nginx
