@@ -159,8 +159,8 @@ close_firewall() {
 }
 open_port() {
   if [[ ${release} != "centos" ]]; then
-    #iptables -I INPUT -p tcp --dport 80 -j ACCEPT
-    #iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+    #iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+    #iptables -I INPUT -p tcp --dport 8443 -j ACCEPT
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
     iptables -I INPUT -m state --state NEW -m udp -p udp --dport 8080 -j ACCEPT
     ip6tables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
@@ -563,7 +563,7 @@ trojan_client_conf(){
   "local_addr": "127.0.0.1",
   "local_port": 1080,
   "remote_addr": "${domain}",
-  "remote_port": 443,
+  "remote_port": 8443,
   "log_level": 1,
   "log_file": "",
   "password": [
